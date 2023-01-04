@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HomeKnits.Data
 {
-    public static class SeedData
+    public static class UserSeedData
     {
-        public static void Initialize(IServiceProvider serviceprovider)
+        public static async Task Initialize(IServiceProvider serviceprovider)
         {
             using var context = serviceprovider.GetService<HomeKnitsContext>();
 
@@ -28,7 +28,7 @@ namespace HomeKnits.Data
                 var roleStore = new RoleStore<IdentityRole>(context);
                 if(!context.Roles.Any(r => r.Name == role))
                 {
-                    roleStore.CreateAsync(new IdentityRole(role));
+                    await roleStore.CreateAsync(new IdentityRole { Name = role, NormalizedName = role.ToUpper(), ConcurrencyStamp = new Guid().ToString()});
                 }
             }
 
@@ -37,6 +37,7 @@ namespace HomeKnits.Data
             // Default users
             IdentityUser adminUser = new()
             {
+                Id = "305c54b3-b67b-4b08-a355-fa1ba5c9053b",
                 Email = "admin@homeknits.com",
                 EmailConfirmed = true,
                 NormalizedEmail = "ADMIN@HOMEKNITS.COM",
@@ -48,35 +49,51 @@ namespace HomeKnits.Data
             var hashedAdminPassword = passwordHasher.HashPassword(adminUser, adminPassword);
             adminUser.PasswordHash = hashedAdminPassword;
 
-            IdentityUser reviewerUser = new()
+            IdentityUser reviewerUser1 = new()
             {
-                Email = "reviewer@test.com",
+                Id = "ce9c18ef-72d2-46f7-8652-1d10189259b7",
+                Email = "reviewer1@test.com",
                 EmailConfirmed = true,
-                NormalizedEmail = "REVIEWER@TEST.COM",
-                UserName = "reviewer@test.com",
-                NormalizedUserName = "REVIEWER@TEST.COM",
+                NormalizedEmail = "REVIEWER1@TEST.COM",
+                UserName = "reviewer1@test.com",
+                NormalizedUserName = "REVIEWER1@TEST.COM",
                 SecurityStamp = Guid.NewGuid().ToString("D")
             };
-            string reviewerPassword = "Reviewer123!";
-            var hashedReviewerPassword = passwordHasher.HashPassword(reviewerUser, reviewerPassword);
-            reviewerUser.PasswordHash = hashedReviewerPassword;
+            string reviewer1Password = "Reviewer1123!";
+            var hashedReviewer1Password = passwordHasher.HashPassword(reviewerUser1, reviewer1Password);
+            reviewerUser1.PasswordHash = hashedReviewer1Password;
+
+            IdentityUser reviewerUser2 = new()
+            {
+                Id = "65b43bef-5a5e-412a-86dd-da417d71fdd7",
+                Email = "reviewer2@test.com",
+                EmailConfirmed = true,
+                NormalizedEmail = "REVIEWER2@TEST.COM",
+                UserName = "reviewer2@test.com",
+                NormalizedUserName = "REVIEWER2@TEST.COM",
+                SecurityStamp = Guid.NewGuid().ToString("D")
+            };
+            string reviewer2Password = "Reviewer2123!";
+            var hashedReviewer2Password = passwordHasher.HashPassword(reviewerUser1, reviewer2Password);
+            reviewerUser2.PasswordHash = hashedReviewer2Password;
 
             // Create the users
-            foreach (IdentityUser user in new IdentityUser[] { adminUser, reviewerUser })
+            foreach (IdentityUser user in new IdentityUser[] { adminUser, reviewerUser1, reviewerUser2 })
             {
                 if (!context.Users.Any(u => u.UserName == user.UserName))
                 {
                     var userStore = new UserStore<IdentityUser>(context);
-                    userStore.CreateAsync(user);
+                    await userStore.CreateAsync(user);
                 }
             }
 
             // Assign them roles
-            AssignRole(serviceprovider, adminUser.Email, roles[0]);
-            AssignRole(serviceprovider, reviewerUser.Email, roles[1]);
+            await AssignRole(serviceprovider, adminUser.Email, roles[0]);
+            await AssignRole(serviceprovider, reviewerUser1.Email, roles[1]);
+            await AssignRole(serviceprovider, reviewerUser2.Email, roles[1]);
         }
 
-        public static async void AssignRole(IServiceProvider serviceProvider, string email, string role)
+        public static async Task AssignRole(IServiceProvider serviceProvider, string email, string role)
         {
             var userManager = serviceProvider.GetService<UserManager<IdentityUser>>();
             if (userManager != null)

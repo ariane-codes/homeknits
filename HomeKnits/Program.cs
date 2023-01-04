@@ -14,15 +14,22 @@ builder.Services.AddDbContext<HomeKnitsContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HomeKnitsContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+using (var userSeedScope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
+    var userSeedservices = userSeedScope.ServiceProvider;
+    await UserSeedData.Initialize(userSeedservices);
+}
+
+using (var productSeedScope = app.Services.CreateScope())
+{
+    var productSeedServices = productSeedScope.ServiceProvider;
+    await ProductSeedData.Initialize(productSeedServices);
 }
 
 // Configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HomeKnits.Models
 {
@@ -6,9 +7,16 @@ namespace HomeKnits.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public string Name { get; set; }
+
+        [Required]
+        public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
 
+        public string? Category { get; set; }
+
+        public string? Colour { get; set; }
+
+        public string? Technique { get; set; }
     }
 }
