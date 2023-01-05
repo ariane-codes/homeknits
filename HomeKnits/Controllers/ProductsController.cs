@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HomeKnits.Data;
 using HomeKnits.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomeKnits.Controllers
 {
@@ -45,6 +46,7 @@ namespace HomeKnits.Controllers
             return View(product);
         }
 
+        [Authorize(Policy = "Admin")]
         // GET: Products/Create
         public IActionResult Create()
         {
@@ -69,6 +71,7 @@ namespace HomeKnits.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Product == null)
@@ -89,6 +92,7 @@ namespace HomeKnits.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Description,ImageUrl,Category,Colour,Technique")] Product product)
         {
             if (id != product.Id)
@@ -120,6 +124,7 @@ namespace HomeKnits.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Product == null)
@@ -140,6 +145,7 @@ namespace HomeKnits.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             if (_context.Product == null)

@@ -11,6 +11,8 @@ namespace HomeKnits.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
+
+        [Display(Name = "Image")]
         public string? ImageUrl { get; set; }
 
         public string? Category { get; set; }

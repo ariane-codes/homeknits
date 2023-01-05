@@ -16,6 +16,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HomeKnitsContext>();
+
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("Admin", policy =>
+    {
+        policy.RequireRole("Admin");
+    });
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
