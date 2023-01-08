@@ -42,6 +42,7 @@ namespace HomeKnits.Controllers
 
             var relatedReviews = _context.Review
                 .Where(r => r.ProductId == id)
+                .OrderByDescending(r => r.DateCreated)
                 .Include(r => r.UserId)
                 .ToList();
 

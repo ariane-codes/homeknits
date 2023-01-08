@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Principal;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Drawing.Printing;
 
 namespace HomeKnits.Controllers
 {
@@ -82,14 +83,16 @@ namespace HomeKnits.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if ( review.ReviewText != null)
             {
                 review.Id = Guid.NewGuid();
                 review.ProductId = (Guid)productId;
+                review.DateCreated = DateTime.UtcNow;
                 _context.Add(review);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Products", productId);
+                return RedirectToAction("Index", "Products");
             }
+
             return View(review);
         }
 
