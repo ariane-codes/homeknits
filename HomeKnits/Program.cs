@@ -2,6 +2,7 @@ using HomeKnits.Data;
 using HomeKnits.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HomeKnitsContext>(options =>
@@ -16,7 +17,7 @@ builder.Services.AddAuthorization(opts =>
 {
     opts.AddPolicy("Admin", policy =>
     {
-        policy.RequireRole("Admin");
+        policy.RequireClaim(ClaimTypes.Role, "Admin");
     });
 });
 
@@ -54,7 +55,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthorization(); 
 
 app.MapControllerRoute(
     name: "default",

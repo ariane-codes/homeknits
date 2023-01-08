@@ -23,7 +23,14 @@ namespace HomeKnits.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-              return _context.Product != null ? 
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId != null)
+            {
+                var loggedInUser = _context.Users.Where(u => u.Id == userId).First();
+                
+            }
+
+            return _context.Product != null ? 
                           View(await _context.Product.ToListAsync()) :
                           Problem("Entity set 'HomeKnitsContext.Product'  is null.");
         }
