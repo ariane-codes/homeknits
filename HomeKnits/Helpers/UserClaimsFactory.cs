@@ -4,11 +4,12 @@ using System.Security.Claims;
 
 namespace HomeKnits.Helpers
 {
-    public class UserClaimsFactory : UserClaimsPrincipalFactory<IdentityUser>
+    public class UserClaimsFactory : UserClaimsPrincipalFactory<IdentityUser, IdentityRole>
     {
         public UserClaimsFactory(
             UserManager<IdentityUser> userManager,
-            IOptions<IdentityOptions> options) : base(userManager, options)
+            RoleManager<IdentityRole> roleManager,
+            IOptions<IdentityOptions> options) : base(userManager, roleManager, options)
         {}
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IdentityUser user)

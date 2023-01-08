@@ -5,6 +5,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    double averageRating = Convert.ToDouble(ViewData["AverageRating"]);
 }
 
 <h1>@Html.DisplayFor(model => model.Name)</h1>
@@ -14,30 +15,54 @@
     <hr />
     <div class="row">
         <dl class="col-sm-6">
-            <dt class = "col-sm-2">
+            <dt class = "col-sm-3">
                 @Html.DisplayNameFor(model => model.Description)
             </dt>
-            <dd class = "col-sm-10">
+            <dd class = "col-sm-9">
                 @Html.DisplayFor(model => model.Description)
             </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Category)
+            <div class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Category)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Category)
+                </dd>
+            </div>
+            
+            <div class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Colour)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Colour)
+                </dd>
+            </div>
+            
+            <div class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Technique)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Technique)
+                </dd>
+            </div>
+            
+            <div class="row">
+                <dt class="col-sm-3">
+                Average Rating
             </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Category)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Colour)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Colour)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Technique)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Technique)
-            </dd>
+            <dd class="col-sm-9">
+                    @if (averageRating >= 0) 
+                    {
+                        @averageRating
+                    } else
+                    {
+                        <p>-</p>
+                    }
+                </dd>
+            </div>
+            
         </dl>
         <div class="col-sm-6 d-flex justify-content-center">
             <img 
@@ -48,10 +73,78 @@
     </div>
     
 </div>
-<div>
+
+<div class="d-flex">
     @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
     {
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |&nbsp
+        </div>
     }
+
+    <div>
+        <a asp-action="Create" asp-controller="Reviews" asp-route-productId="@Model?.Id">Add a review</a> |&nbsp
+    </div>
+    
     <a asp-action="Index">Back to List</a>
 </div>
+
+<hr />
+<h2>Reviews</h2>
+
+@{
+    List<Review>? reviews = ViewData["Reviews"] as List<Review>;
+    var userId = User.FindFirst("UserId")?.Value;
+}
+
+@if (reviews != null)
+{
+    @foreach (Review review in reviews)
+    {
+        <hr />
+        <div class="row">
+            <dl class="col-sm-9">
+
+                <dt class="col-2">
+                    Author
+                </dt>
+                <dd class="col-10">
+                    @review.UserId?.ToString()
+                </dd>
+                <dt class="col-2">
+                    Rating
+                </dt>
+                <dd class="col-10">
+                    @review.Rating
+                </dd>
+                <dt class="col-2">
+                    Date
+                </dt>
+                <dd class="col-10">
+                    @review.DateCreated.ToString()
+                </dd>
+                <dd class="col-12">
+                    @review.ReviewText
+                </dd>
+            </dl>
+            <div class="col-sm-3">
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="col-12">
+                        <a asp-action="Delete" asp-controller="Reviews" asp-route-id="@review.Id">Delete</a>
+                    </div>
+                }
+                @if (userId == review.UserId?.Id)
+                {
+                    <div class="col-12">
+                        <a asp-action="Edit" asp-controller="Reviews" asp-route-id="@review.Id">Edit</a>
+                    </div>
+                }
+                
+            </div>
+        </div>
+        
+    }
+}
+
+

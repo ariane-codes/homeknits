@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HomeKnits.Data;
 using HomeKnits.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HomeKnits.Controllers
 {
@@ -23,12 +23,6 @@ namespace HomeKnits.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirst("UserId")?.Value;
-            if (userId != null)
-            {
-                var loggedInUser = _context.Users.Where(u => u.Id == userId).First();
-                
-            }
 
             return _context.Product != null ? 
                           View(await _context.Product.ToListAsync()) :
@@ -45,11 +39,32 @@ namespace HomeKnits.Controllers
 
             var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var relatedReviews = _context.Review
+                .Where(r => r.ProductId == id)
+                .Include(r => r.UserId)
+                .ToList();
+
+
+            double averageRating;
+            if (!relatedReviews.IsNullOrEmpty())
+            {
+                averageRating = (from rs in relatedReviews
+                   select rs).Average(r => r.Rating);
+            } else
+            {
+                averageRating = -1;
+            }
+             
+
+
             if (product == null)
             {
                 return NotFound();
             }
 
+            ViewData["Reviews"] = relatedReviews;
+            ViewData["AverageRating"] = averageRating;
             return View(product);
         }
 

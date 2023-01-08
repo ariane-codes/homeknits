@@ -21,8 +21,7 @@ namespace HomeKnits.Models
 
         public string? Technique { get; set; }
 
-        [ForeignKey("Review")]
-        public Guid ReviewId { get; set; }
+        
         
     }
 }

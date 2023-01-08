@@ -28,9 +28,9 @@ namespace HomeKnits.Controllers
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
-              return _context.Review != null ? 
-                          View(await _context.Review.ToListAsync()) :
-                          Problem("Entity set 'HomeKnitsContext.Review'  is null.");
+            return _context.Review != null ?
+                        View(await _context.Review.ToListAsync()) :
+                        Problem("Entity set 'HomeKnitsContext.Review'  is null.");
         }
 
         // GET: Reviews/Details/5
@@ -53,8 +53,12 @@ namespace HomeKnits.Controllers
 
         // GET: Reviews/Create
         [Authorize]
-        public IActionResult Create()
+        public IActionResult Create(Guid? productId)
         {
+            if (productId == null)
+            {
+                return NotFound();
+            }
             return View();
         }
 
@@ -64,7 +68,7 @@ namespace HomeKnits.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create([Bind("Id,Rating,ReviewText,ProductId,DateCreated")] Review review)
+        public async Task<IActionResult> Create(Guid? productId, [Bind("Id,Rating,ReviewText,ProductId,DateCreated")] Review review)
         {
             var userId = User.FindFirst("UserId")?.Value;
             if (userId != null)
@@ -73,13 +77,19 @@ namespace HomeKnits.Controllers
                 review.UserId = loggedInUser;
             }
 
+            if (productId == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 review.Id = Guid.NewGuid();
+                review.ProductId = (Guid)productId;
                 _context.Add(review);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            } 
+                return RedirectToAction("Index", "Products", productId);
+            }
             return View(review);
         }
 
@@ -170,14 +180,14 @@ namespace HomeKnits.Controllers
             {
                 _context.Review.Remove(review);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ReviewExists(Guid id)
         {
-          return (_context.Review?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Review?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

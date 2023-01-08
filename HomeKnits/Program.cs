@@ -19,6 +19,10 @@ builder.Services.AddAuthorization(opts =>
     {
         policy.RequireClaim(ClaimTypes.Role, "Admin");
     });
+    opts.AddPolicy("IsLoggedIn", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+    });
 });
 
 builder.Services.AddControllersWithViews();
