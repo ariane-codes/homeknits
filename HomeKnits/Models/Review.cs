@@ -13,12 +13,8 @@ namespace HomeKnits.Models
         public int Rating { get; set; }
         public string? ReviewText { get; set; }
 
-        [ForeignKey("Product")]
-        public Guid ProductId { get; set; }
-
-        [Required]
         [ForeignKey("User")]
-        public IdentityUser? UserID { get; set; }
+        public IdentityUser? UserId { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]

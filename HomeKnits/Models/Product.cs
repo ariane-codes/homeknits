@@ -20,5 +20,9 @@ namespace HomeKnits.Models
         public string? Colour { get; set; }
 
         public string? Technique { get; set; }
+
+        [ForeignKey("Review")]
+        public Guid ReviewId { get; set; }
+        
     }
 }

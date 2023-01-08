@@ -4,6 +4,7 @@ using HomeKnits.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeKnits.Migrations
 {
     [DbContext(typeof(HomeKnitsContext))]
-    partial class HomeKnitsContextModelSnapshot : ModelSnapshot
+    [Migration("20230108134929_NormalizedIdFields")]
+    partial class NormalizedIdFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +47,6 @@ namespace HomeKnits.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ReviewId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Technique")
                         .HasColumnType("nvarchar(max)");
 
@@ -64,6 +64,9 @@ namespace HomeKnits.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -71,6 +74,7 @@ namespace HomeKnits.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -286,7 +290,9 @@ namespace HomeKnits.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "UserId")
                         .WithMany()
-                        .HasForeignKey("User");
+                        .HasForeignKey("User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("UserId");
                 });
