@@ -6,7 +6,7 @@ This is an ASP.NET Core MVC application developed using ASP.NET 7.0 (read more [
 
 The architecture of this project is defined by the following diagram:
 
-![Architecture Diagram](https://github.com/ariane-codes/homeknits/blob/main/MVCModel?raw=true)
+![Architecture Diagram](https://github.com/ariane-codes/homeknits/blob/main/MVCModel.png?raw=true)
 
 # Use
 
